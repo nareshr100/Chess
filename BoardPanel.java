@@ -8,10 +8,6 @@ import Pieces.IGameView;
 import Pieces.Piece;
 import Pieces.PiecePosition;
 import java.awt.Image;
-import Pieces.Piece;
-import Pieces.PiecePosition;
-
-import java.awt.Graphics;
 import java.awt.Color;
 
 final class BoardPanel extends JPanel {
