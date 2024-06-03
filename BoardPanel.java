@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import Pieces.IGameView;
-import Pieces.Piece;
+import Model.IGameView;
+import Model.Piece;
 import Pieces.PiecePosition;
 import java.awt.Image;
 import java.awt.Color;

@@ -2,12 +2,21 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.*;
+
+import Model.GameState;
+import Model.IGameView;
+import Rules.ChessMove;
+import Model.Piece;
+import Model.Player;
+import Rules.Rules;
+
 import java.awt.*;
 import java.awt.event.*;
 
-import Pieces.IGameView;
-import Pieces.Piece;
+import Pieces.ComputerPlayer;
+import Pieces.HumanPlayer;
 import Pieces.PiecePosition;
+
 
 
 
@@ -17,10 +26,17 @@ public class Board implements MouseListener, MouseMotionListener{
     private JFrame frame = new JFrame();
     private JPanel panel;
     private IGameView gameView;
+    private GameState gameState;
+    private ChessMove chessMove;
+    private HumanPlayer player1 = new HumanPlayer(true);
+    private ComputerPlayer player2;
+    PiecePosition firstClickPiecePos = null;
+    boolean firstClick = true;
     // Container pane = frame.getContentPane();
 
-    public Board(IGameView gameView) throws IOException {
+    public Board(IGameView gameView, GameState gameState) throws IOException {
         this.gameView = gameView;
+        this.gameState = gameState;
 
         frame = new JFrame();
         frame.addMouseListener(this);
@@ -44,10 +60,27 @@ public class Board implements MouseListener, MouseMotionListener{
 
     @Override
     public void mouseClicked(MouseEvent e) {
+
         final Point pos = e.getPoint();
         final PiecePosition clickPiecePos = convertToPiecePosition(GraphicsPosition.create(pos.y, pos.x));
-        List<Piece> pieces = gameView.getPieces();
-        printPieceAtPosition(pieces, clickPiecePos);
+        printPieceAtPosition(gameState.getPieces(), clickPiecePos); 
+
+        if (firstClick == true) {
+            firstClickPiecePos = clickPiecePos;
+            firstClick = false;
+
+        } else {
+            PiecePosition secondClickPiecePos = clickPiecePos;
+            ChessMove chessMove = new ChessMove(firstClickPiecePos, secondClickPiecePos, player1);
+            if (Rules.isLegalMove(chessMove, gameState)) {
+                System.out.println("Move is legal");
+            }
+            else {
+                System.out.println("Move is not legal");
+            }
+
+            firstClick = true;
+        }
     }
 
     @Override
@@ -99,4 +132,25 @@ public class Board implements MouseListener, MouseMotionListener{
             System.out.println("There is no piece here");
         }
     }
+
+    public static void killPieceAtPosition(IGameView gameView, PiecePosition clickPiecePos, JPanel panel) {
+        boolean pieceHere = false;
+        List<Piece> pieces = gameView.getPieces();
+        for (Piece piece: pieces){
+            PiecePosition piecePos = piece.getPos();
+            String colour = piece.isWhite() ? "White" : "Black";
+            if (piecePos.getRow() == clickPiecePos.getRow() & piecePos.getCol() == clickPiecePos.getCol()) {
+                System.out.println("There is a " + colour +" "+ piece.getPieceType() + " here");
+                pieceHere = true;
+                pieces.remove(piece);
+                gameView.setPieces(pieces);
+                panel.repaint();
+                break;
+            }
+        }
+        if (!pieceHere) {
+            System.out.println("There is no piece here");
+        }
+    }
+
 }

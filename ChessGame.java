@@ -1,13 +1,15 @@
 import java.io.IOException;
 
-import Pieces.*;
+import Model.GameState;
+import Model.IGameView;
 
 public class ChessGame {
     
     public static void main(String[] args) throws IOException {
 
         IGameView gameView = new GameState();
-        Board board = new Board(gameView);
+        GameState gameState = new GameState();
+        Board board = new Board(gameView, gameState);
                 
     }
 }

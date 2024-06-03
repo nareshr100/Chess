@@ -1,9 +1,8 @@
+package Model;
 import java.util.ArrayList;
 import java.util.List;
 
-import Pieces.IGameView;
 import Pieces.King;
-import Pieces.Piece;
 import Pieces.PiecePosition;
 import Pieces.Queen;
 import Pieces.Rook;
@@ -122,6 +121,19 @@ public class GameState implements IGameView {
     public List<Piece> getPieces(){
         return this.pieces;
     }
+
+    public void setPieces(List<Piece> pieces) {
+        this.pieces = pieces;
+    }
     
+    public Piece getPieceAtPiecePosition(PiecePosition piecePos) {
+        for (Piece piece : pieces){
+            if (piece.getPos().getRow() == piecePos.getRow() && piece.getPos().getCol() == piecePos.getCol()) {
+                System.out.println("Piece found!");
+                return piece;
+            }
+        }
+        return null;
+    }
     
 }

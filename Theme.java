@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import Pieces.Piece;
+import Model.Piece;
 import Pieces.PieceType;
 
 public class Theme {
