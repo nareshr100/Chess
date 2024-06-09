@@ -34,10 +34,14 @@ public abstract class Piece {
         return pos;
     }
 
+    public void setPos(PiecePosition pos) {
+        this.pos = pos;
+    }
+
     public boolean isWhite() {
         return isWhite;
     }
 
-    public abstract boolean isValidMove(ChessMove move);
+    public abstract boolean isValidMove(ChessMove move, GameState gameState);
 
 }

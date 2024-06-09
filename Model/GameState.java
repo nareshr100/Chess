@@ -45,6 +45,7 @@ public class GameState implements IGameView {
     private Pawn wPawn6;
     private Pawn wPawn7;
     private Pawn wPawn8;
+    private Pawn wPawn9;
 
     private List<Piece> pieces = new ArrayList<>();
 
@@ -98,6 +99,8 @@ public class GameState implements IGameView {
         this.pieces.add(this.wPawn7);
         this.wPawn8 = Pawn.create(PiecePosition.create(6, 7), true);
         this.pieces.add(this.wPawn8);
+        this.wPawn9 = Pawn.create(PiecePosition.create(5, 7), true);
+        this.pieces.add(this.wPawn9);
 
         this.wRook = Rook.create(PiecePosition.create(7, 0), true);
         this.pieces.add(this.wRook);
@@ -129,7 +132,6 @@ public class GameState implements IGameView {
     public Piece getPieceAtPiecePosition(PiecePosition piecePos) {
         for (Piece piece : pieces){
             if (piece.getPos().getRow() == piecePos.getRow() && piece.getPos().getCol() == piecePos.getCol()) {
-                System.out.println("Piece found!");
                 return piece;
             }
         }

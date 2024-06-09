@@ -1,5 +1,6 @@
 package Pieces;
 
+import Model.GameState;
 // import Model.Move;
 import Model.Piece;
 import Rules.ChessMove;
@@ -15,32 +16,39 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean isValidMove(ChessMove move) {
-        PiecePosition startPiecePosition = move.getStartPiecePosition();
-        PiecePosition endPiecePosition = move.getEndPiecePosition();
+    public boolean isValidMove(ChessMove move, GameState gameState) {
+
+        PiecePosition startPiecePos = move.getStartPiecePosition();
+        PiecePosition endPiecePos = move.getEndPiecePosition();
+
+        int xSquares = Math.abs(endPiecePos.getCol() - startPiecePos.getCol());
+        int ySquares = endPiecePos.getRow() - startPiecePos.getRow();
+
+        Piece pieceToTake = gameState.getPieceAtPiecePosition(endPiecePos);
+
         boolean validMove = false;
         boolean hasMoved = this.hasMoved();
-        int maxSquares = 1;
-        boolean isPlayerWhite = move.getPlayer().isWhite();
-
-        if (hasMoved == false) {
-            maxSquares = 2;
-        }
-
-        int squaresMoved = endPiecePosition.getRow() - startPiecePosition.getRow();
-        
+        int maxSquares = hasMoved == false ? 2 : 1;
+        boolean isPlayerWhite = move.getPlayer().isWhite();  
 
         if (isPlayerWhite == true) {
-            squaresMoved *= -1;
+            ySquares *= -1;
         }
 
+        System.out.println("xSquares: " + xSquares);
+        System.out.println("ySquares: " + ySquares);
+
         // WILL BREAK WHEN PAWN REACHES PROMOTION SQUARE
-        if (squaresMoved > 0 && squaresMoved <= maxSquares) {
+        if (ySquares > 0 && ySquares <= maxSquares && xSquares == 0) {
             return validMove = true;
         }
-        else {
-            return validMove;
+
+        // ADD TAKING DIAGONALLY LOGIC
+        if (pieceToTake != null) {
+            return validMove = (xSquares == 1 && ySquares == 1) ? true : false;
         }
+
+        return validMove;
 
     }
 }

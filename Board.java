@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -25,18 +26,24 @@ public class Board implements MouseListener, MouseMotionListener{
     private static final int BOARD_LENGTH = BoardPanel.PANEL_LENGTH*BoardPanel.SQUARE_LENGTH;
     private JFrame frame = new JFrame();
     private JPanel panel;
+
     private IGameView gameView;
     private GameState gameState;
+
     private ChessMove chessMove;
+    public List<ChessMove> moves;
+
     private HumanPlayer player1 = new HumanPlayer(true);
-    private ComputerPlayer player2;
+    private HumanPlayer player2 = new HumanPlayer(false);
+
+
     PiecePosition firstClickPiecePos = null;
     boolean firstClick = true;
-    // Container pane = frame.getContentPane();
 
     public Board(IGameView gameView, GameState gameState) throws IOException {
         this.gameView = gameView;
         this.gameState = gameState;
+        this.moves = new ArrayList<>();
 
         frame = new JFrame();
         frame.addMouseListener(this);
@@ -67,13 +74,42 @@ public class Board implements MouseListener, MouseMotionListener{
 
         if (firstClick == true) {
             firstClickPiecePos = clickPiecePos;
-            firstClick = false;
+            Piece pieceToMove = gameState.getPieceAtPiecePosition(firstClickPiecePos);
+            firstClick = pieceToMove == null ? true : false;
 
         } else {
             PiecePosition secondClickPiecePos = clickPiecePos;
             ChessMove chessMove = new ChessMove(firstClickPiecePos, secondClickPiecePos, player1);
+
+            System.out.println("moves.size(): " + moves.size());
+
+            if (moves.size() == 0) {
+                chessMove = new ChessMove(firstClickPiecePos, secondClickPiecePos, player1);
+            }
+            else{
+                
+                ChessMove lastMove = moves.get(moves.size() - 1);
+                System.out.println("lastMove: " + lastMove);
+                Player lastMovePlayer = lastMove.getPlayer();
+                System.out.println("lastMovePlayer.iswhite(): " + lastMovePlayer.isWhite());
+                System.out.println("lastMovePlayer.isWhite() == player1.isWhite(): " + (lastMovePlayer.isWhite() == player1.isWhite()));
+
+                if (lastMovePlayer.isWhite() == player1.isWhite()) {
+                    System.out.println("hello");
+                    chessMove = new ChessMove(firstClickPiecePos, secondClickPiecePos, player2);
+                }
+                else {
+                    System.out.println("goodbye");
+                    chessMove = new ChessMove(firstClickPiecePos, secondClickPiecePos, player1);
+                }
+
+            }
+            
+            
             if (Rules.isLegalMove(chessMove, gameState)) {
                 System.out.println("Move is legal");
+                movePiece(chessMove, gameView, gameState, panel);
+                moves.add(chessMove);
             }
             else {
                 System.out.println("Move is not legal");
@@ -133,6 +169,39 @@ public class Board implements MouseListener, MouseMotionListener{
         }
     }
 
+    public void movePiece(ChessMove move, IGameView gameView, GameState c, JPanel panel) {
+        
+        PiecePosition startPiecePos = move.getStartPiecePosition();
+        PiecePosition endPiecePos = move.getEndPiecePosition();
+
+        List<Piece> viewPieces = gameView.getPieces();
+        List<Piece> statePieces = gameState.getPieces();
+
+        Piece viewPieceToMove = gameView.getPieceAtPiecePosition(startPiecePos);
+        Piece statePieceToMove = gameState.getPieceAtPiecePosition(startPiecePos);
+
+        Piece viewPieceAtFinalSquare = gameView.getPieceAtPiecePosition(endPiecePos);
+        Piece statePieceAtFinalSquare = gameState.getPieceAtPiecePosition(endPiecePos);
+
+        viewPieceToMove.setPos(endPiecePos);
+        statePieceToMove.setPos(endPiecePos);
+
+        if (statePieceAtFinalSquare != null) {
+
+            viewPieces.remove(viewPieceAtFinalSquare);
+            statePieces.remove(statePieceAtFinalSquare);
+
+            gameView.setPieces(viewPieces);
+            gameState.setPieces(statePieces);
+        }
+
+        viewPieceToMove.setHasMoved(true);
+        statePieceToMove.setHasMoved(true); 
+
+        panel.repaint();
+        
+    }
+
     public static void killPieceAtPosition(IGameView gameView, PiecePosition clickPiecePos, JPanel panel) {
         boolean pieceHere = false;
         List<Piece> pieces = gameView.getPieces();
@@ -152,5 +221,7 @@ public class Board implements MouseListener, MouseMotionListener{
             System.out.println("There is no piece here");
         }
     }
+
+    
 
 }
